@@ -1,0 +1,10 @@
+#spring.application.name=itp-mongodb
+spring:
+    application:
+        name: itpmongodb
+    mongodb:
+      host: localhost:27168
+      username: istad
+      password: qwerqwer
+      database: mymongo
+      authentication-database: admin
