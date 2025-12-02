@@ -1,18 +1,23 @@
 package co.istad.itp_mongodb.service.iplm;
 
 import co.istad.itp_mongodb.dto.CreatedUserRequest;
+import co.istad.itp_mongodb.dto.FilterDto;
 import co.istad.itp_mongodb.dto.UpdatedUserRequest;
 import co.istad.itp_mongodb.dto.UserResponse;
+import co.istad.itp_mongodb.filter.FilteringFactory;
 import co.istad.itp_mongodb.mapper.UserMapper;
-import co.istad.itp_mongodb.model.Users;
+import co.istad.itp_mongodb.domain.Users;
 import co.istad.itp_mongodb.repository.UserRepository;
 import co.istad.itp_mongodb.service.UserService;
+import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,10 +28,24 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public List<UserResponse> findAll() {
-        List<Users> users = userRepository.findAll();
+    public Page<UserResponse> filterUsers(FilterDto filter, int page, int size) {
+        Sort sortByname = Sort.by(Sort.Direction.ASC, "name");
+        Pageable pageable = PageRequest.of(page, size, sortByname);
 
-        return users.stream().map(userMapper::toUseResponse).toList();
+        Page<Users> filteredUsers = userRepository.findAllWithFilter(Users.class,
+                FilteringFactory.parseFromParams(filter.filter(), Users.class), pageable);
+        return filteredUsers.map(userMapper::toUseResponse);
+    }
+
+    @Override
+    public Page <UserResponse> findAll(int page, int size) {
+
+        Sort sortByName = Sort.by(Sort.Direction.ASC, "name");
+        Pageable pageable = PageRequest.of(page, size, sortByName);
+
+        Page<Users> users = userRepository.findAll(pageable);
+
+        return users.map(userMapper::toUseResponse);
     }
 
     @Override

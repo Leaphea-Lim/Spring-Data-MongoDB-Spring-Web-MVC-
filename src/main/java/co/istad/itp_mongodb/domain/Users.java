@@ -1,4 +1,4 @@
-package co.istad.itp_mongodb.model;
+package co.istad.itp_mongodb.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +17,8 @@ public class Users {
     private String username;
     private String email;
     private String password;
+    private Integer age;
+    private String city;
 
 }
 

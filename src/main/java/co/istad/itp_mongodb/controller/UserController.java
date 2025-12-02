@@ -1,12 +1,14 @@
 package co.istad.itp_mongodb.controller;
 
 import co.istad.itp_mongodb.dto.CreatedUserRequest;
+import co.istad.itp_mongodb.dto.FilterDto;
 import co.istad.itp_mongodb.dto.UpdatedUserRequest;
 import co.istad.itp_mongodb.dto.UserResponse;
 import co.istad.itp_mongodb.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -15,10 +17,22 @@ public class UserController {
 
     private final UserService userService;
 
+    @PostMapping("/filter")
+    public Page<UserResponse> filterUsers(
+            @RequestBody FilterDto filter,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "25") int size
+            ){
+        return userService.filterUsers(filter, page, size);
+    }
+
     //todo GET all users
     @GetMapping
-    public List<UserResponse> getAllUsers() {
-        return userService.findAll();
+    public Page<UserResponse> getAllUsers(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "25") int size
+    ) {
+        return userService.findAll(page, size);
 
     }
 
